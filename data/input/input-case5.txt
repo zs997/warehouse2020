@@ -1,0 +1,2 @@
+  7   20           0.8         0.15  0.05   0.5   1  2    0.2        0.3   0.5     24
+/*M   ORDERLENGTH  A_OF_ORDER  B_OF  C_OF   WC    F  WA   A_OF_LOCA  B_OF  C_OF     N */
