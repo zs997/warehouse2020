@@ -1,5 +1,5 @@
 package cn.zs.dao;
-import cn.zs.model.Answer;
+import cn.zs.model.answer.Answer;
 
 import java.io.*;
 

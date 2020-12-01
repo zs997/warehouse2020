@@ -1,4 +1,4 @@
-package cn.zs.model;
+package cn.zs.model.column;
 
 /**
  * @version: V1.0
@@ -11,58 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static cn.zs.model.Params.*;
-public class ColumnL extends ColumnR{
-    double firstProb;
+public class ColumnL extends ColumnM{
+
     double g;
     double elg;
-    /* *
-    * 要修改分配库位函数
-    * */
-    void assignABC(int numA,int numB,int numC,int assignmentMode){
-        //分配方式为1 对称分配
-        if (assignmentMode == 1){
-            assignABCSymmetry(numA,numB,numC);
-        }else {
-            assignABC(numA,numB,numC);
-        }
-    }
-    void assignABCSymmetry(int numA,int numB,int numC){
-        this.numA = numA;
-        this.numB = numB;
-        this.numC = numC;
-        int halfA = (int)Math.ceil(numA / 2.0);
-        int halfB = (int )Math.ceil(numB/2.0); //numA/2 若是小数向上取整，整除开，不变化
-        int i = 0;
-        for(i = 0;i < halfA;i++)
-        {
-            locations[i] = 0;
-        }
-        for(;i<(halfA + halfB);i++)
-        {
-            locations[i] = 1;
-        }
-        for(;i<(halfA + halfB + numC);i++)
-        {
-            locations[i] = 2;
-        }
-        for(;i<(halfA + numB + numC);i++)
-        {
-            locations[i] = 1;
-        }
-        for(;i < N;i++)
-        {
-            locations[i] = 0;
-        }
-    }
-
-    /**
-     * @description: 计算该通道之前没有进入通道的概率
-     * 需要已知上一个通道的进入概率，及上一个通道之前没有进入的概率
-     * */
-    void calculFirstProb(double lastFirstProb,double lastEnterProb)
-    {
-        firstProb = lastFirstProb * (1 - lastEnterProb);
-    }
     /**
      * 计算单个通道内 最大间隔期望
      * */
@@ -240,7 +192,5 @@ public class ColumnL extends ColumnR{
         calculElg();
         cost=(elg + elc)/nonEmptyProb;
     }
-    public double getFirstProb() {
-        return firstProb;
-    }
+
 }

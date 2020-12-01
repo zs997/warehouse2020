@@ -1,6 +1,10 @@
 package cn.zs.algorithm;
 
 import cn.zs.model.*;
+import cn.zs.model.answer.Answer;
+import cn.zs.model.answer.ColumnAnswer;
+import cn.zs.model.column.Column;
+import cn.zs.model.column.ColumnL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,12 +19,12 @@ import static cn.zs.model.Params.*;
  * @packageName: cn.zs.algorithm
  * @data: 2020-11-27 16:49
  **/
-public class SolutionL {
-    public  static void doDP(Answer answer) {
+public class SolutionL implements   Solution {
+    public   void doDP(Answer answer) {
         //用map表示状态 m,i,j 为键 前i通道 A分配i个 B分配j个
         HashMap<String, State> stateMap = new HashMap<>();
         //用map保存可以重复使用的分配方案 1,i,j 为键 A分配i个 B分配j个
-        HashMap<String, ColumnL> columnLMap = new HashMap<>();
+        HashMap<String, ColumnL> columnMap = new HashMap<>();
         //初始化第一通道 穷举 ABC分配到单个通道个数
         for (int i = 0; i <= N; i++) {
             if (i > overallA) {
@@ -40,14 +44,14 @@ public class SolutionL {
                 //第一通道 A用i个 B用j个 最优分配方式为0
                 String key0 = 1 + "," + i + "," + j +"," + 0 ;
                 //为了节约计算量
-                columnLMap.put(key0, col);
+                columnMap.put(key0, col);
 
                 ColumnL colSymmetry = new ColumnL();
                 colSymmetry.calculCost(i,j,k,1);
                 //第一通道 A用i个 B用j个 最优分配方式为1
                 String key1 = 1 + "," + i + "," + j + "," + 1 ;
                 //为了节约计算量
-                columnLMap.put(key1, colSymmetry);
+                columnMap.put(key1, colSymmetry);
 
                 String key = 1 + "," + i + "," + j;
                 //状态值 第一通道 肯定不是对称分布
@@ -131,7 +135,7 @@ public class SolutionL {
 
                             //按顺序分配
                             String single0 = 1 + "," + ma + "," + mb + "," + 0;
-                            ColumnL col0 = columnLMap.get(single0);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                            ColumnL col0 = columnMap.get(single0);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                             col0.calculCost(m, i, j, k,lastState.getFirstProb(),lastState.getEnterProb()); //只需要再计算lastprob,Elc,以及cost
                             if (lastState.getTargetValue() + col0.getCost() < newState.getTargetValue()) {
                                 //除了Sofar_length和 lastABC都已经更新完毕
@@ -148,7 +152,7 @@ public class SolutionL {
                                 newState.setFirstProb(col0.getFirstProb());
                             }
                             String single1 = 1 + "," + ma + "," + mb + "," + 1;
-                            ColumnL col1 = columnLMap.get(single1);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                            ColumnL col1 = columnMap.get(single1);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                             col1.calculCost(m, i, j, k,lastState.getFirstProb(),lastState.getEnterProb()); //只需要再计算lastprob,Elc,以及cost
                             if (lastState.getTargetValue() + col1.getCost() < newState.getTargetValue()) {
                                 //除了Sofar_length和 lastABC都已经更新完毕
@@ -218,7 +222,7 @@ public class SolutionL {
 //                }
                 //按顺序分配
                 String single0 = 1 + "," + ma + "," + mb + "," + 0;
-                ColumnL col0 = columnLMap.get(single0);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                ColumnL col0 = columnMap.get(single0);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                 col0.calculCost(M, i, j, k,lastState.getFirstProb(),lastState.getEnterProb()); //只需要再计算lastprob,Elc,以及cost
                 if (lastState.getTargetValue() + col0.getCost() < newState.getTargetValue()) {
                     //除了Sofar_length和 lastABC都已经更新完毕
@@ -236,7 +240,7 @@ public class SolutionL {
                 }
                 //对称分配
                 String single1 = 1 + "," + ma + "," + mb + "," + 1;
-                ColumnL col1 = columnLMap.get(single1);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                ColumnL col1 = columnMap.get(single1);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                 col1.calculCost(M, i, j, k,lastState.getFirstProb(),lastState.getEnterProb()); //只需要再计算lastprob,Elc,以及cost
                 if (lastState.getTargetValue() + col1.getCost() < newState.getTargetValue()) {
                     //除了Sofar_length和 lastABC都已经更新完毕
@@ -291,25 +295,31 @@ public class SolutionL {
         answer.setSumCost(sumCost);
     }
 
-    public static void check(Answer answer){
+    public  void check(Answer answer){
         List<ColumnAnswer> columnAnswers = answer.getColumnAnswers();
         double checkCost = 0;
         int usedA = 0;
         int usedB = 0;
         int usedC = 0;
+        double lastFirstProb = 1;
+        double lastEnterProb = 0;
         for (int i = 0; i < columnAnswers.size(); i++) {
             ColumnAnswer columnAnswer = columnAnswers.get(i);
             int numA = columnAnswer.numA;
             int numB = columnAnswer.numB;
             int numC = columnAnswer.numC;
             int rowNO = columnAnswer.rowNO;
-            ColumnR col = new ColumnR();
+            int assignmentMode = columnAnswer.assignmentMode;
 
+            Column col = new ColumnL();
             usedA += numA;
             usedB += numB;
             usedC += numC;
-            col.calculCost(rowNO,usedA,usedB,usedC,numA,numB,numC);
+            col.calculCost(rowNO,usedA,usedB,usedC,numA,numB,numC,assignmentMode,lastFirstProb,lastEnterProb);
             checkCost += col.getCost();
+            lastFirstProb =  lastFirstProb * (1 - lastEnterProb);
+            lastEnterProb = col.getEnterProb();
+
         }
         answer.setCheckCost(checkCost);
     }

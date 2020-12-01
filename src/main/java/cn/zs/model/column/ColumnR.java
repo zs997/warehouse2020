@@ -1,4 +1,4 @@
-package cn.zs.model;
+package cn.zs.model.column;
 /**
  * @descrip: Return拣货策略
  * */
@@ -125,11 +125,36 @@ public class ColumnR implements Column{
         cost=(elr+elc)/nonEmptyProb;
     }
 
+    @Override
+    public void calculCost(int no, int usedA, int usedB, int usedC, int numA, int numB, int numC, int assignmentMode, double lastFirstProb, double lastEnterProb) {
+
+    }
+
+    @Override
+    public void calculCost(int no, int usedA, int usedB, int usedC, double lastEvenProb, double lastEnterProb) {
+
+    }
+
+    @Override
+    public void calculCost(int no, int usedA, int usedB, int usedC, int numA, int numB, int numC, double lastEvenProb, double lastEnterProb) {
+
+    }
+
     public double getCost() {
         return cost;
     }
 
     public double getEnterProb() {
         return enterProb;
+    }
+
+    @Override
+    public double getEvenProb() {
+        return 0;
+    }
+
+    @Override
+    public double getFirstProb() {
+        return 0;
     }
 }

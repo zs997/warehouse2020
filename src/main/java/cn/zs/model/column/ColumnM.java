@@ -5,7 +5,7 @@
  * date: 2020-11-30 14:33
  * copyright(c) 2019-2021 hust
  */
-package cn.zs.model;
+package cn.zs.model.column;
 
 /**
  * @version: V1.0

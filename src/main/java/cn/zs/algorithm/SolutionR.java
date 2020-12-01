@@ -1,8 +1,10 @@
 package cn.zs.algorithm;
-import cn.zs.model.Answer;
-import cn.zs.model.ColumnAnswer;
-import cn.zs.model.ColumnR;
-import cn.zs.model.State;
+import cn.zs.model.*;
+import cn.zs.model.answer.Answer;
+import cn.zs.model.answer.ColumnAnswer;
+import cn.zs.model.column.Column;
+import cn.zs.model.column.ColumnR;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +16,12 @@ import  static cn.zs.model.Params.*;
  * @packageName: cn.zs.algorithm
  * @data: 2020-11-27 16:49
  **/
-public class SolutionR {
-    public  static void doDP(Answer answer) {
-
+public class SolutionR implements Solution{
+    public   void doDP(Answer answer) {
         //用map表示状态 m,i,j 为键 前i通道 A分配i个 B分配j个
         HashMap<String, State> stateMap = new HashMap<>();
         //用map保存可以重复使用的分配方案 1,i,j 为键 A分配i个 B分配j个
-        HashMap<String, ColumnR> columnRMap = new HashMap<>();
+        HashMap<String, Column> columnMap = new HashMap<>();
         //初始化第一通道 穷举 ABC分配到单个通道个数
         for (int i = 0; i <= N; i++) {
             if (i > overallA) {
@@ -34,12 +35,12 @@ public class SolutionR {
                 if (k > overallC) {
                     continue;
                 }
-                ColumnR col = new ColumnR();
+                Column col = new ColumnR();
                 col.calculCost(i, j, k);
                 //第一通道 A用i个 B用j个
                 String key = 1 + "," + i + "," + j;
                 //为了节约计算量
-                columnRMap.put(key, col);
+                columnMap.put(key, col);
                 //状态值
                 State state = new State();
                 state.setCosti(col.getCost());
@@ -117,7 +118,7 @@ public class SolutionR {
                                 continue;
                             }
                             String single = 1 + "," + ma + "," + mb;
-                            ColumnR col = columnRMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                            Column col = columnMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                             col.calculCost(m, i, j, k); //只需要再计算lastprob,Elc,以及cost
                             if (lastState.getTargetValue() + col.getCost() < newState.getTargetValue()) {
                                 //除了Sofar_length和 lastABC都已经更新完毕
@@ -183,7 +184,7 @@ public class SolutionR {
                     continue;
                 }
                 String single = 1 + "," + ma + "," + mb;
-                ColumnR col = columnRMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                Column col = columnMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                 col.calculCost(M, i, j, k); //只需要再计算lastprob,Elc,以及cost
                 if (lastState.getTargetValue() + col.getCost() < newState.getTargetValue()) {
                     newState.setTargetValue(lastState.getTargetValue() + col.getCost());
@@ -234,7 +235,7 @@ public class SolutionR {
         answer.setSumCost(sumCost);
     }
 
-    public static void check(Answer answer){
+    public  void check(Answer answer){
         List<ColumnAnswer> columnAnswers = answer.getColumnAnswers();
         double checkCost = 0;
         int usedA = 0;
@@ -246,7 +247,7 @@ public class SolutionR {
             int numB = columnAnswer.numB;
             int numC = columnAnswer.numC;
             int rowNO = columnAnswer.rowNO;
-            ColumnR col = new ColumnR();
+            Column col = new ColumnR();
 
             usedA += numA;
             usedB += numB;

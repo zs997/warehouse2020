@@ -1,4 +1,4 @@
-package cn.zs.model;
+package cn.zs.model.column;
 
 /**
  * @version: V1.0

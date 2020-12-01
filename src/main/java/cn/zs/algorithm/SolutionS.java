@@ -1,6 +1,9 @@
 package cn.zs.algorithm;
 
 import cn.zs.model.*;
+import cn.zs.model.answer.Answer;
+import cn.zs.model.answer.ColumnAnswer;
+import cn.zs.model.column.ColumnS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,13 +18,13 @@ import static cn.zs.model.Params.*;
  * @packageName: cn.zs.algorithm
  * @data: 2020-11-27 16:49
  **/
-public class SolutionS {
-    public  static void doDP(Answer answer) {
+public class SolutionS implements Solution{
+    public   void doDP(Answer answer) {
 
         //用map表示状态 m,i,j 为键 前i通道 A分配i个 B分配j个
         HashMap<String, State> stateMap = new HashMap<>();
         //用map保存可以重复使用的分配方案 1,i,j 为键 A分配i个 B分配j个
-        HashMap<String, ColumnS> columnSHashMap = new HashMap<>();
+        HashMap<String, ColumnS> columnMap = new HashMap<>();
         //初始化第一通道 穷举 ABC分配到单个通道个数
         for (int i = 0; i <= N; i++) {
             if (i > overallA) {
@@ -40,7 +43,7 @@ public class SolutionS {
                 //第一通道 A用i个 B用j个
                 String key = 1 + "," + i + "," + j;
                 //为了节约计算量
-                columnSHashMap.put(key, col);
+                columnMap.put(key, col);
                 //状态值
                 State state = new State();
                 state.setCosti(col.getCost());
@@ -121,7 +124,7 @@ public class SolutionS {
                             double lastEnterProb = lastState.getEnterProb();
                             double lastEvenProb = lastState.getEvenProb();
                             String single = 1 + "," + ma + "," + mb;
-                            ColumnS col = columnSHashMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                            ColumnS col = columnMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                             //col从map中取得 单个库位的数据已经做好了计算
                             col.calculCost(m, i, j, k, lastEvenProb, lastEnterProb); //只需要再计算lastprob,Elc,以及cost
                             if (lastState.getTargetValue() + col.getCost() < newState.getTargetValue()) {
@@ -193,7 +196,7 @@ public class SolutionS {
                 double lastEvenProb = lastState.getEvenProb();
 
                 String single = 1 + "," + ma +"," + mb;
-                ColumnS col = columnSHashMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
+                ColumnS col = columnMap.get(single);//单个通道的库位分配:库位分配,ELr,enterprob经过了计算
                 col.calculCost(M, i, j, k,lastEvenProb,lastEnterProb); //只需要再计算lastprob,Elc,以及cost
                 if (lastState.getTargetValue() + col.getCost() < newState.getTargetValue()) {
                     newState.setTargetValue(lastState.getTargetValue() + col.getCost());
@@ -246,7 +249,7 @@ public class SolutionS {
             answer.setSumCost(sumCost);
         }
     }
-    public static void check(Answer answer){
+    public  void check(Answer answer){
         List<ColumnAnswer> columnAnswers = answer.getColumnAnswers();
         double checkCost = 0;
         int usedA = 0;
