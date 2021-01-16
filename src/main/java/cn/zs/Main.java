@@ -23,8 +23,18 @@ import java.util.ArrayList;
 
 import static cn.zs.model.Params.*;
 public class Main {
-
     public static void main(String[] args) {
+        checkData();
+    }
+    public static void checkData(){
+        String rootPath = System.getProperty("user.dir");
+        TxtDao txtDao = new TxtDao();
+        String read = txtDao.read(rootPath + "\\data\\input\\input-case"+ 12 + ".txt");
+        Params.processingData(read);
+        String params = Params.getParams();
+        System.out.println(params);
+    }
+    public static void run(){
         String [] shape = {"L","M","R","S"};
 
         TxtDao txtDao = new TxtDao();
@@ -54,7 +64,7 @@ public class Main {
                 long startTime = System.currentTimeMillis();
                 s.doDP(ans);
                 long endTime = System.currentTimeMillis();
-                 s.check(ans);
+                s.check(ans);
                 ans.setTimeCost(String.valueOf((endTime-startTime)/1000.0)+ "s");
                 System.out.println(ans);
                 txtDao.write(rootPath + "\\data\\output\\output-"+ shape[i] +  caseNo + ".txt",ans);
